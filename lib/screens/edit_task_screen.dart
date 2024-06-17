@@ -19,6 +19,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   late String _clientData;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
+  late bool _isDone;
 
   @override
   void didChangeDependencies() {
@@ -30,6 +31,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     _clientData = task.clientData;
     _selectedDate = task.serviceDate;
     _selectedTime = TimeOfDay(hour: task.serviceDate.hour, minute: task.serviceDate.minute);
+    _isDone = task.isDone;
   }
 
   void _presentDatePicker() async {
@@ -76,15 +78,19 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       _selectedTime!.minute,
     );
 
-    final editedTask = Task(
-      id: _id,
+    final newTask = Task(
+      id: DateTime.now().toString(), // Crear una nueva ID para la nueva tarea
       serviceType: _serviceType,
       amount: _amount,
       clientData: _clientData,
       serviceDate: serviceDateTime,
+      isDone: _isDone,
     );
 
-    Provider.of<TaskProvider>(context, listen: false).editTask(_id, editedTask);
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    taskProvider.deleteTask(_id); // Eliminar la tarea existente
+    taskProvider.addTask(newTask); // Agregar la nueva tarea
+
     Navigator.of(context).pop();
   }
 
@@ -95,88 +101,94 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         title: Text('Editar Tarea'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextFormField(
-                  initialValue: _serviceType,
-                  decoration: InputDecoration(labelText: 'Tipo de Servicio'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor ingrese el tipo de servicio.';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => _serviceType = value!,
-                ),
-                TextFormField(
-                  initialValue: _amount.toString(),
-                  decoration: InputDecoration(labelText: 'Monto a Pagar'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value!.isEmpty || double.tryParse(value) == null) {
-                      return 'Por favor ingrese un monto válido.';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => _amount = double.parse(value!),
-                ),
-                TextFormField(
-                  initialValue: _clientData,
-                  decoration: InputDecoration(labelText: 'Datos del Cliente'),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Por favor ingrese los datos del cliente.';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) => _clientData = value!,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _selectedDate == null
-                            ? 'No se ha seleccionado fecha'
-                            : 'Fecha: ${DateFormat.yMd().format(_selectedDate!)}',
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    initialValue: _serviceType,
+                    decoration: InputDecoration(labelText: 'Tipo de Servicio'),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Por favor ingrese el tipo de servicio.';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) => _serviceType = value!,
+                  ),
+                  TextFormField(
+                    initialValue: _amount.toString(),
+                    decoration: InputDecoration(labelText: 'Monto a Pagar'),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value!.isEmpty || double.tryParse(value) == null) {
+                        return 'Por favor ingrese un monto válido.';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) => _amount = double.parse(value!),
+                  ),
+                  TextFormField(
+                    initialValue: _clientData,
+                    decoration: InputDecoration(labelText: 'Datos del Cliente'),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Por favor ingrese los datos del cliente.';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) => _clientData = value!,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _selectedDate == null
+                              ? 'No se ha seleccionado fecha'
+                              : 'Fecha: ${DateFormat.yMd().format(_selectedDate!)}',
+                        ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: _presentDatePicker,
-                      child: Text(
-                        'Seleccionar Fecha',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      TextButton(
+                        onPressed: _presentDatePicker,
+                        child: Text(
+                          'Seleccionar Fecha',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _selectedTime == null
-                            ? 'No se ha seleccionado hora'
-                            : 'Hora: ${_selectedTime!.format(context)}',
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _selectedTime == null
+                              ? 'No se ha seleccionado hora'
+                              : 'Hora: ${_selectedTime!.format(context)}',
+                        ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: _presentTimePicker,
-                      child: Text(
-                        'Seleccionar Hora',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      TextButton(
+                        onPressed: _presentTimePicker,
+                        child: Text(
+                          'Seleccionar Hora',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  child: Text('Guardar Cambios'),
-                  onPressed: _submitData,
-                ),
-              ],
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    child: Text('Guardar Cambios'),
+                    onPressed: _submitData,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

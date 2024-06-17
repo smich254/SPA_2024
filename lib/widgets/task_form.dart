@@ -76,85 +76,91 @@ class _TaskFormState extends State<TaskForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Tipo de Servicio'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Por favor ingrese el tipo de servicio.';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _serviceType = value!,
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Monto a Pagar'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value!.isEmpty || double.tryParse(value) == null) {
-                    return 'Por favor ingrese un monto válido.';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _amount = double.parse(value!),
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Datos del Cliente'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Por favor ingrese los datos del cliente.';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _clientData = value!,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      _selectedDate == null
-                          ? 'No se ha seleccionado fecha'
-                          : 'Fecha: ${DateFormat.yMd().format(_selectedDate!)}',
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Tipo de Servicio'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Por favor ingrese el tipo de servicio.';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _serviceType = value!,
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Monto a Pagar'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value!.isEmpty || double.tryParse(value) == null) {
+                      return 'Por favor ingrese un monto válido.';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _amount = double.parse(value!),
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'Datos del Cliente'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Por favor ingrese los datos del cliente.';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) => _clientData = value!,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedDate == null
+                            ? 'No se ha seleccionado fecha'
+                            : 'Fecha: ${DateFormat.yMd().format(_selectedDate!)}',
+                      ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: _presentDatePicker,
-                    child: Text(
-                      'Seleccionar Fecha',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    TextButton(
+                      onPressed: _presentDatePicker,
+                      child: Text(
+                        'Seleccionar Fecha',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      _selectedTime == null
-                          ? 'No se ha seleccionado hora'
-                          : 'Hora: ${_selectedTime!.format(context)}',
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedTime == null
+                            ? 'No se ha seleccionado hora'
+                            : 'Hora: ${_selectedTime!.format(context)}',
+                      ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: _presentTimePicker,
-                    child: Text(
-                      'Seleccionar Hora',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    TextButton(
+                      onPressed: _presentTimePicker,
+                      child: Text(
+                        'Seleccionar Hora',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                child: Text('Agregar Tarea'),
-                onPressed: _submitData,
-              ),
-            ],
+                  ],
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  child: Text('Agregar Tarea'),
+                  onPressed: _submitData,
+                ),
+              ],
+            ),
           ),
         ),
       ),

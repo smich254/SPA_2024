@@ -20,6 +20,11 @@ class TaskProvider with ChangeNotifier {
     }
   }
 
+  void deleteTask(String id) {
+    _tasks.removeWhere((task) => task.id == id);
+    notifyListeners();
+  }
+
   void toggleTaskStatus(String id) {
     final index = _tasks.indexWhere((task) => task.id == id);
     if (index != -1) {
