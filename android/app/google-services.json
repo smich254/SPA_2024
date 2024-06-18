@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "203692712369",
+    "project_id": "spa2024",
+    "storage_bucket": "spa2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203692712369:android:8d5c727b1d94ffbc155d90",
+        "android_client_info": {
+          "package_name": "com.smich254.spa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY0fWG_FaSbBiQPifSnKssxHdQ7nZ73MI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

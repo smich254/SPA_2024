@@ -50,10 +50,13 @@ class TaskItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.edit),
               onPressed: () {
-                Navigator.of(context).pushNamed(
-                  EditTaskScreen.routeName,
-                  arguments: task,
-                );
+                Navigator.of(context).pushNamed(EditTaskScreen.routeName, arguments: task);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                Provider.of<TaskProvider>(context, listen: false).deleteTask(task.id);
               },
             ),
           ],

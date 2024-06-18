@@ -78,8 +78,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       _selectedTime!.minute,
     );
 
-    final newTask = Task(
-      id: DateTime.now().toString(), // Crear una nueva ID para la nueva tarea
+    final updatedTask = Task(
+      id: _id, // Utilizes the same ID for editing
       serviceType: _serviceType,
       amount: _amount,
       clientData: _clientData,
@@ -88,9 +88,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     );
 
     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-    taskProvider.deleteTask(_id); // Eliminar la tarea existente
-    taskProvider.addTask(newTask); // Agregar la nueva tarea
-
+    taskProvider.editTask(_id, updatedTask); // Edits the existing task
     Navigator.of(context).pop();
   }
 

@@ -43,12 +43,16 @@ class _TaskFormState extends State<TaskForm> {
     }
   }
 
-  void _submitData() {
+  void _submitData() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
     if (_selectedDate == null || _selectedTime == null) {
-      // Show some error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, seleccione fecha y hora.'),
+        ),
+      );
       return;
     }
 
@@ -67,10 +71,19 @@ class _TaskFormState extends State<TaskForm> {
       amount: _amount,
       clientData: _clientData,
       serviceDate: serviceDateTime,
+      isDone: false,
     );
 
-    Provider.of<TaskProvider>(context, listen: false).addTask(newTask);
-    Navigator.of(context).pop();
+    try {
+      await Provider.of<TaskProvider>(context, listen: false).addTask(newTask);
+      Navigator.of(context).pop();
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to add task. Try again later.'),
+        ),
+      );
+    }
   }
 
   @override
@@ -140,8 +153,7 @@ class _TaskFormState extends State<TaskForm> {
                   children: [
                     Expanded(
                       child: Text(
-                        _selectedTime == null
-                            ? 'No se ha seleccionado hora'
+                        _selectedTime == null                            ? 'No se ha seleccionado hora'
                             : 'Hora: ${_selectedTime!.format(context)}',
                       ),
                     ),
@@ -167,3 +179,4 @@ class _TaskFormState extends State<TaskForm> {
     );
   }
 }
+
