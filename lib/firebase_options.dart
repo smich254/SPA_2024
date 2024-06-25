@@ -63,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '203692712369',
     projectId: 'spa2024',
     storageBucket: 'spa2024.appspot.com',
+    iosClientId: '203692712369-2d82mfrp5ru9olcl80ne6lhqe6r3l27r.apps.googleusercontent.com',
     iosBundleId: 'com.example.spa2024',
   );
 }

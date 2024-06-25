@@ -1,5 +1,6 @@
-package com.smich254.spa-2024
+package com.smich254.spa
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity()
+class MainActivity: FlutterActivity() {
+}

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,81 +11,65 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _auth = FirebaseAuth.instance;
-  String _email = '';
-  String _password = '';
-  bool _isLogin = true;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email'],
+  );
 
-  void _switchAuthMode() {
-    setState(() {
-      _isLogin = !_isLogin;
-    });
-  }
-
-  void _submit() async {
+  Future<void> _signInWithGoogle() async {
     setState(() {
       _isLoading = true;
     });
     try {
-      if (_isLogin) {
-        await _auth.signInWithEmailAndPassword(email: _email, password: _password);
-      } else {
-        final userCredential = await _auth.createUserWithEmailAndPassword(
-          email: _email,
-          password: _password,
-    );
-        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
-          'email': _email,
-          'createdAt': Timestamp.now(),
+      // Trigger the Google Sign-In flow.
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        setState(() {
+          _isLoading = false;
         });
-  }
+        return; // The user canceled the sign-in.
+      }
+
+      // Obtain the auth details from the request.
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Create a new credential.
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase with the Google user credentials.
+      await _auth.signInWithCredential(credential);
+
+      // Navigate to the home screen if the sign-in is successful.
       Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(error.toString()),
-      ));
+      final snackBar = SnackBar(content: Text(error.toString()));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       setState(() {
         _isLoading = false;
       });
-}
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isLogin ? 'Login' : 'Sign Up'),
+        title: Text('Login'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              decoration: InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-              onChanged: (value) {
-                _email = value;
-              },
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              onChanged: (value) {
-                _password = value;
-              },
-            ),
-            SizedBox(height: 20),
-            if (_isLoading) CircularProgressIndicator(),
+            if (_isLoading)
+              Center(child: CircularProgressIndicator()),
             if (!_isLoading)
               ElevatedButton(
-                onPressed: _submit,
-                child: Text(_isLogin ? 'Login' : 'Sign Up'),
-              ),
-            if (!_isLoading)
-              TextButton(
-                onPressed: _switchAuthMode,
-                child: Text('${_isLogin ? 'Create new account' : 'I already have an account'}'),
+                onPressed: _signInWithGoogle,
+                child: Text('Sign in with Google'),
               ),
           ],
         ),

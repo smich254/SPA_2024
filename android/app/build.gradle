@@ -25,9 +25,9 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.smich254.spa"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
-
+    compileSdk 35 // Define explícitamente como un número para evitar errores.
+    ndkVersion "27.0.11902837" // Asegúrate de que esta versión esté instalada.
+    
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -35,19 +35,45 @@ android {
 
     defaultConfig {
         applicationId = "com.smich254.spa"
-        minSdkVersion = 23 // Modifica la versión mínima del SDK aquí
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutterVersionCode.toInteger()
-        versionName = flutterVersionName
+        minSdkVersion 23 // Modifica la versión mínima del SDK aquí
+        targetSdk 34 // Define explícitamente como un número para evitar errores.
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
+            // Enabling shrinking for release builds
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            // Disable shrinking and minification for debug builds
+            minifyEnabled false
+            shrinkResources false
         }
     }
+
+    kotlinOptions {
+        jvmTarget = '1.8' // Asegúrate de que coincida con tu versión de Java
+    }
 }
+
 
 flutter {
     source = "../.."
 }
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.0.0'
+    implementation 'androidx.core:core-ktx:1.8.0' // Incluye las librerías necesarias de AndroidX
+    implementation 'androidx.appcompat:appcompat:1.4.2' // Incluye las librerías necesarias de AndroidX
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4' // Incluye las librerías necesarias de AndroidX
+    implementation 'com.google.firebase:firebase-auth-ktx:21.1.0' // Firebase Authentication
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.1.2' // Firestore
+    implementation 'com.google.android.material:material:1.6.1' // Material Design
+    implementation 'com.google.android.gms:play-services-auth:20.0.2' // Google Sign-In
+}
+
+// Asegúrate de que el plugin de Google Services está al final del archivo
+apply plugin: 'com.google.gms.google-services'
